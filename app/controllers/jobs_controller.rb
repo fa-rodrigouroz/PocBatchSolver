@@ -1,5 +1,5 @@
 class JobsController < ApplicationController
-  before_action :set_job, only: [:show]
+  before_action :set_job, only: [:show, :result]
 
   # GET /jobs
   def index
@@ -16,7 +16,7 @@ class JobsController < ApplicationController
   # GET /jobs/1/result
   def result
     # TODO
-    render json: @job
+    render plain: S3Store.read(@job.model_path)
   end
 
   # POST /jobs
