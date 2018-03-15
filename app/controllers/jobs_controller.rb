@@ -13,14 +13,23 @@ class JobsController < ApplicationController
     render json: @job
   end
 
+  # GET /jobs/1/result
+  def result
+    # TODO
+    render json: @job
+  end
+
   # POST /jobs
   def create
 
     # decode model data
-    # model = plain = Base64.decode64(job_params[:model])
+    model = Base64.decode64(job_params[:model])
 
     # TODO upload to S3
-    model_path = 'pending'
+    goal = job_params[:goal]
+    user = job_params[:user]
+    model_path = "user-#{user}-goal-#{goal}-#{Time.now.to_i}"
+    S3Store.store(model_path, model)
 
     @job = Job.new(user: job_params[:user], goal: job_params[:goal], model_path: model_path)
 
@@ -41,6 +50,6 @@ class JobsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def job_params
-      params.require(:job).permit(:user, :goal, :model)
+      params.permit(:user, :goal, :model)
     end
 end
