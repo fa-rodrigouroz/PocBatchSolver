@@ -15,7 +15,8 @@ class JobsController < ApplicationController
 
   # GET /jobs/1/result
   def result
-    # TODO
+    # TODO retrieve actual result when present
+    # return 400 if status != finished
     render plain: S3Store.read(@job.model_path)
   end
 
@@ -50,6 +51,7 @@ class JobsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def job_params
+      # TODO This is giving "Unpermitted parameter: :job" because we're using a custom parameter that's not in the model
       params.permit(:user, :goal, :model)
     end
 end
