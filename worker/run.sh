@@ -53,6 +53,6 @@ aws s3 cp "${BATCH_FILE_S3_URL}" - > "${TMPFILE}" || error_exit "Failed to downl
 # TODO: we can add a timeout
 #  --tmlim nnn       limit solution time to nnn seconds
 #  --memlim nnn      limit available memory to nnn megabytes (currently 180Mb)
-glpsol --lp ${TMPFILE} -w ${TMPOUTFILE}
+glpsol --lp ${TMPFILE} -w ${TMPOUTFILE} --tmlim 240
 
 aws s3 cp ${TMPOUTFILE} s3://pbsolverout/
