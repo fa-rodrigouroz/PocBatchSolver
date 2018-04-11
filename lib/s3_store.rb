@@ -1,22 +1,21 @@
 class S3Store
 
-    Aws.config.update(endpoint: 'http://localhost:4572', s3: { force_path_style: true })
-
-    BUCKET = 'trade-models'
+    SOURCE_BUCKET = 'pbsolver'
+    OUTPUT_BUCKET = 'pbsolverout'
 
     class << self
-        
+
         def s3
-            @s3 ||= Aws::S3::Resource.new(endpoint: 'http://localhost:4572')
+            @s3 ||= Aws::S3::Resource.new
         end
 
-        def store(name, data)
-            obj = s3.bucket(BUCKET).object(name)
+        def store(bucket, name, data)
+            obj = s3.bucket(bucket).object(name)
             obj.put(body: data)
         end
 
-        def read(name)
-            obj = s3.bucket(BUCKET).object(name)
+        def read(bucket, name)
+            obj = s3.bucket(bucket).object(name)
             obj.get.body.read
         rescue Aws::S3::Errors::NoSuchKey
             nil

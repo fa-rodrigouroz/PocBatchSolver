@@ -7,7 +7,7 @@
 #  goal          :integer
 #  model_path    :string
 #  solution_path :string
-#  status        :integer          default(0)
+#  status        :integer          default("processing")
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #
