@@ -3,9 +3,9 @@
 PATH="/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
 BASENAME="${0##*/}"
 
-aws configure set aws_access_key_id XXX
-aws configure set aws_secret_access_key XXX
-#printenv
+#aws configure set aws_access_key_id XXX
+#aws configure set aws_secret_access_key XXX
+printenv
 
 # Standard function to print an error and exit with a failing return code
 error_exit () {
@@ -32,8 +32,8 @@ cleanup () {
    if [ -z "${KEEP_BATCH_FILE_CONTENTS}" ] \
      && [ -n "${TMPDIR}" ] \
      && [ "${TMPDIR}" != "/" ]; then
-      rm -r "${TMPDIR}"
       rm -r "${TMPOUTFILE}"
+      rm -r "${TMPDIR}"
    fi
 }
 trap 'cleanup' EXIT HUP INT QUIT TERM
@@ -49,8 +49,10 @@ install -m 0600 /dev/null "${TMPOUTFILE}" || error_exit "Failed to create temp f
 
 # Create a temporary file and download the script
 aws s3 cp "${BATCH_FILE_S3_URL}" - > "${TMPFILE}" || error_exit "Failed to download S3 script."
-local script="./${1}"; shift
 
+# TODO: we can add a timeout
+#  --tmlim nnn       limit solution time to nnn seconds
+#  --memlim nnn      limit available memory to nnn megabytes (currently 180Mb)
 glpsol --lp ${TMPFILE} -w ${TMPOUTFILE}
 
 aws s3 cp ${TMPOUTFILE} s3://pbsolverout/
