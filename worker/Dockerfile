@@ -5,8 +5,6 @@ RUN apt-get install -y -qq gcc make wget s3cmd
 RUN apt-get install -y -qq python-pip
 RUN pip install awscli
 
-ADD run.sh /usr/local/bin/run.sh
-RUN chmod +x /usr/local/bin/run.sh
 ENV GLPK_VERSION 4.52.1
 WORKDIR /tmp
 USER root
@@ -21,5 +19,8 @@ RUN wget https://mirror.clarkson.edu/gnu/glpk/glpk-4.52.1.tar.gz; \
     apt-get purge -y gcc make wget; \
     apt-get -y autoremove; \
     apt-get clean
+
+ADD run.sh /usr/local/bin/run.sh
+RUN chmod +x /usr/local/bin/run.sh
 
 ENTRYPOINT ["/usr/local/bin/run.sh"]

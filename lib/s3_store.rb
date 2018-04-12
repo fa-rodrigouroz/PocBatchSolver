@@ -1,7 +1,7 @@
 class S3Store
 
-    SOURCE_BUCKET = 'pbsolver'
-    OUTPUT_BUCKET = 'pbsolverout'
+    SOURCE_BUCKET = 'fa-solver'
+    OUTPUT_BUCKET = 'fa-solver-output'
 
     class << self
 

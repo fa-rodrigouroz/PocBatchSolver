@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class JobsController < ApplicationController
-  before_action :set_job, only: [:show, :result]
+  before_action :set_job, only: %i[show result]
 
   # GET /jobs
   def index
@@ -15,19 +17,15 @@ class JobsController < ApplicationController
 
   # GET /jobs/1/result
   def result
-    # TODO retrieve actual result when present
-    # return 400 if status != finished
     render status: :not_found unless @job.finished?
     render plain: S3Store.read(S3Store::OUTPUT_BUCKET, "#{@job.model_path}.out")
   end
 
   # POST /jobs
   def create
-
     # decode model data
     model = Base64.decode64(job_params[:model])
 
-    # TODO upload to S3
     goal = job_params[:goal]
     user = job_params[:user]
     model_path = "user-#{user}-goal-#{goal}-#{Time.now.to_i}.lp"
@@ -43,20 +41,21 @@ class JobsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_job
-      @job = Job.find(params[:id])
-      if S3Store.read(S3Store::OUTPUT_BUCKET, "#{@job.model_path}.out")
-        @job.solution_path = "#{@job.model_path}.out"
-        @job.finished!
-        @job.save
-      end
-      @job
-    end
 
-    # Only allow a trusted parameter "white list" through.
-    def job_params
-      # TODO This is giving "Unpermitted parameter: :job" because we're using a custom parameter that's not in the model
-      params.permit(:user, :goal, :model)
+  # Use callbacks to share common setup or constraints between actions.
+  def set_job
+    @job = Job.find(params[:id])
+    if @job.processing? && S3Store.read(S3Store::OUTPUT_BUCKET, "#{@job.model_path}.out")
+      @job.solution_path = "#{@job.model_path}.out"
+      @job.finished!
+      @job.save
     end
+    @job
+  end
+
+  # Only allow a trusted parameter "white list" through.
+  def job_params
+    # TODO: This is giving "Unpermitted parameter: :job" because we're using a custom parameter that's not in the model
+    params.permit(:user, :goal, :model)
+  end
 end
